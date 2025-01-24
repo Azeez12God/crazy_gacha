@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->integer('money')->default(0);
+            $table->integer('money')->default(0)->nullable();
             $table->string('profile_picture')->nullable();
             $table->rememberToken();
             $table->timestamps();

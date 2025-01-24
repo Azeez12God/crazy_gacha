@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_picture'
     ];
 
     /**
@@ -32,6 +34,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -49,5 +53,9 @@ class User extends Authenticatable
 
     public function shops(): BelongsToMany{
         return $this->belongsToMany(Shop::class)->withTimestamps();
+    }
+
+    public function prizes(): BelongsToMany{
+        return $this->belongsToMany(Prize::class)->withTimestamps()->withPivot('count');
     }
 }
