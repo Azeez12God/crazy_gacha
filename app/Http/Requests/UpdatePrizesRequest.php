@@ -11,7 +11,7 @@ class UpdatePrizesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,21 @@ class UpdatePrizesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'string',
+            'rarity' => 'in:Común,Rara,Especial,Épica,Legendaria',
+            'reward' => 'integer',
+            'image' => 'string',
+            'audio' => 'string',
+        ];
+    }
+
+    public function messages(): array{
+        return [
+            'name.string' => 'El campo nombre debe ser un texto',
+            'rarity.in' => 'El campo rareza debe ser entre Común, Rara, Especial, Épica o Legendaria',
+            'reward.integer' => 'La recompensa  debe ser un entero',
+            'image.string' => 'La imagen debe ser una url en texto',
+            'audio.string' => 'La audio debe ser una url en texto',
         ];
     }
 }

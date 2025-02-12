@@ -109,4 +109,8 @@ class UserApiController extends Controller
     {
         return $user->prizes;
     }
+
+    public function shops(User $user){
+        return $user->shops;
+    }
 }

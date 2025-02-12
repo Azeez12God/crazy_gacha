@@ -12,6 +12,19 @@ class Prize extends Model
     /** @use HasFactory<\Database\Factories\PrizeFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'rarity',
+        'reward',
+        'image',
+        'audio'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function users():BelongsToMany{
         return $this->belongsToMany(User::class)->withTimestamps()->withPivot(['prize']);
     }

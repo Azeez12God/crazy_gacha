@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('rarity',['Común', 'Rara', 'Especial','Épica','Legendaria']);
-            $table->float('reward');
+            $table->integer('reward');
             $table->string('image');
             $table->string('audio');
             $table->timestamps();

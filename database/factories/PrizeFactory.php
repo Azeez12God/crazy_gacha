@@ -19,7 +19,7 @@ class PrizeFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'rarity' => $this->faker->randomElement(['Común', 'Rara', 'Especial','Épica','Legendaria']),
-            'reward' => $this->faker->randomFloat(2,10,1000),
+            'reward' => $this->faker->numberBetween(1,100),
             'image' => $this->faker->imageUrl(),
             'audio' => $this->faker->word() . '.mp3'
         ];

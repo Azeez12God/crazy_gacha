@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreShopRequest extends FormRequest
 {
@@ -11,7 +12,18 @@ class StoreShopRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = Auth::user();
+        if($user->hasRole('admin')) {
+            return true;
+        }
+        else{
+            if($user->hasPermissionTo('crear producto')) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
     }
 
     /**

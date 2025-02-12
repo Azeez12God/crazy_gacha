@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateShopRequest;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class ShopApiController extends Controller
 {
@@ -89,17 +90,26 @@ class ShopApiController extends Controller
      */
     public function destroy(Shop $shop)
     {
-        if($shop->delete()){
-            return response()->json([
-               'message' => 'El producto ' . $shop->id . ' se ha eliminado correctamente',
-               'data' => null
-            ], Response::HTTP_OK);
+        $user = Auth::user();
+        if($user->hasRole('Admin')){
+            if($shop->delete()){
+                return response()->json([
+                    'message' => 'El producto ' . $shop->id . ' se ha eliminado correctamente',
+                    'data' => null
+                ], Response::HTTP_OK);
+            }
+            else{
+                return response()->json([
+                    'message' => 'Error al eliminar el producto',
+                    'data' => null
+                ], Response::HTTP_NOT_FOUND);
+            }
         }
         else{
             return response()->json([
-               'message' => 'Error al eliminar el producto',
-               'data' => null
-            ], Response::HTTP_NOT_FOUND);
+                'message' => 'Acceso denegado',
+                'data' => null
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
