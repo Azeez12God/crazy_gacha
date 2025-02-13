@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ *
+ */
 class Shop extends Model
 {
     /** @use HasFactory<\Database\Factories\ShopFactory> */
     use HasFactory;
 
+    /**
+     * @var string[]
+     */
     protected $fillable = [
       'name',
       'price',
@@ -20,10 +26,19 @@ class Shop extends Model
       'quantity'
     ];
 
+    /**
+     * @var string[]
+     */
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
+
+    /**
+     * Esta función gestiona la relación entre Tienda y Usuario
+     *
+     * @return BelongsToMany
+     */
     public function users(): BelongsToMany{
         return $this->belongsToMany(User::class)->withTimestamps();
     }
