@@ -11,7 +11,7 @@ class LoginUserApiController extends Controller
 {
     public function login(LoginUserApiRequest $request){
         Auth::attempt([
-            'email'=>$request->email,
+            'name'=>$request->name,
             'password'=>$request->password
         ]);
 

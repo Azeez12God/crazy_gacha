@@ -22,7 +22,7 @@ class LoginUserApiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
+            'name' => 'required|string',
             'password' => 'required|alpha_num|min:8'
         ];
     }
