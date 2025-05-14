@@ -26,7 +26,6 @@ class StorePrizesRequest extends FormRequest
             'rarity' => 'required|in:Común,Rara,Especial,Épica,Legendaria',
             'reward' => 'required|integer',
             'image' => 'required|string',
-            'audio' => 'required|string',
         ];
     }
 
@@ -40,8 +39,6 @@ class StorePrizesRequest extends FormRequest
           'reward.integer' => 'La recompensa  debe ser un entero',
           'image.required' => 'La imagen es obligatoria',
           'image.string' => 'La imagen debe ser una url en texto',
-          'audio.required' => 'El audio es obligatorio',
-          'audio.string' => 'La audio debe ser una url en texto',
         ];
     }
 }

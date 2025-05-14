@@ -23,7 +23,6 @@ class Prize extends Model
         'rarity',
         'reward',
         'image',
-        'audio'
     ];
 
     /**

@@ -23,7 +23,8 @@ class Shop extends Model
       'name',
       'price',
       'type',
-      'quantity'
+      'quantity',
+        'linkImage'
     ];
 
     /**

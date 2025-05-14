@@ -20,6 +20,41 @@ class PrizeApiController extends Controller
         return Prize::all();
     }
 
+    public function random()
+    {
+        // 1) Decide rareza con tus porcentajes
+        $roll = rand(1, 100);
+
+        if ($roll <= 60) {
+            $rarity = 'comun';
+        } elseif ($roll <= 85) {
+            $rarity = 'rara';
+        } elseif ($roll <= 95) {
+            $rarity = 'especial';
+        } elseif ($roll <= 99) {
+            $rarity = 'epica';
+        } else {
+            $rarity = 'legendaria';
+        }
+
+        // 2) Saca un único registro de esa rareza
+        $prize = Prize::where('rarity', $rarity)
+            ->inRandomOrder()
+            ->first();
+
+        if (! $prize) {
+            return response()->json([
+                'message' => "No hay premios de rareza $rarity",
+                'data'    => null
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'message' => 'Premio aleatorio obtenido',
+            'data'    => $prize
+        ], Response::HTTP_OK);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -30,7 +65,6 @@ class PrizeApiController extends Controller
         $prize->rarity=$request->rarity;
         $prize->reward=$request->reward;
         $prize->image=$request->image;
-        $prize->audio=$request->audio;
 
         if($prize->save()){
             return response()->json([

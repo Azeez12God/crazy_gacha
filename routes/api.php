@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserApiController::class);
     Route::apiResource('shop', ShopApiController::class);
+    Route::get('/prizes/random', [PrizeApiController::class, 'random']);
     Route::apiResource('prizes', PrizeApiController::class);
     Route::get('/users/{user}/prizes', [UserApiController::class, 'prizes']);
     Route::get('/users/{user}/products', [UserApiController::class, 'shops']);

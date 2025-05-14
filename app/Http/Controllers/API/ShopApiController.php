@@ -30,6 +30,7 @@ class ShopApiController extends Controller
         $shop->price=$request->price;
         $shop->type=$request->type;
         $shop->quantity=$request->quantity;
+        $shop->linkImage=$request->linkImage;
 
         if($shop->save()){
             return response()->json([
