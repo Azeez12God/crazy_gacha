@@ -24,7 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'profile_picture'
+        'money'
     ];
 
     /**
@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
 
     public function shops(): BelongsToMany{
-        return $this->belongsToMany(Shop::class)->withTimestamps();
+        return $this->belongsToMany(Shop::class)->withTimestamps()->withPivot('count');
     }
 
     public function prizes(): BelongsToMany{

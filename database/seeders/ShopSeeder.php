@@ -17,19 +17,23 @@ class ShopSeeder extends Seeder
         // 1) Borra registros de la tabla pivote si existe relación con usuarios
         DB::table('shop_user')->delete();
 
-        // 2) Elimina la mejora con ID 1 (si existe)
-        Shop::where('id', 1)->delete();
 
-        // 3) Inserta la mejora
+        // 2) Inserta las mejoras
         $datos = [
             [
                 'id'        => 1,
-                'name'      => '+1 click',
-                'price'     => 100,
+                'name'      => '+1 clic',
+                'price'     => 10,
                 'type'      => 'Clicks',
-                'quantity'  => 0,
-                'linkImage' => 'https://i.imgur.com/v90qTWX.jpg'
+                'linkImage' => 'https://cdn-icons-png.flaticon.com/512/1536/1536475.png'
             ],
+            [
+                'id'        => 2,
+                'name'      => 'Nido (+1 clic/s)',
+                'price'     => 50,
+                'type'      => 'Clicks',
+                'linkImage' => 'https://i.imgur.com/pUlojYB.png'
+            ]
         ];
 
         Shop::insert($datos);

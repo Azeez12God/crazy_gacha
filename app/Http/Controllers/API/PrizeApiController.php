@@ -22,9 +22,10 @@ class PrizeApiController extends Controller
 
     public function random()
     {
-        // 1) Decide rareza con tus porcentajes
-        $roll = rand(1, 100);
+        $user = Auth::user(); // Usuario autenticado
 
+        // 1) Decide rareza
+        $roll = rand(1, 100);
         if ($roll <= 60) {
             $rarity = 'comun';
         } elseif ($roll <= 85) {
@@ -37,10 +38,8 @@ class PrizeApiController extends Controller
             $rarity = 'legendaria';
         }
 
-        // 2) Saca un único registro de esa rareza
-        $prize = Prize::where('rarity', $rarity)
-            ->inRandomOrder()
-            ->first();
+        // 2) Obtener un premio aleatorio de esa rareza
+        $prize = Prize::where('rarity', $rarity)->inRandomOrder()->first();
 
         if (! $prize) {
             return response()->json([
@@ -49,9 +48,97 @@ class PrizeApiController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // 3) Guardar en la tabla pivote prize_user
+        $existing = $user->prizes()->where('prize_id', $prize->id)->exists();
+
+        if ($existing) {
+            // Ya tiene ese premio, aumentar el contador
+            $user->prizes()->updateExistingPivot($prize->id, [
+                'count' => \DB::raw('count + 1')
+            ]);
+        } else {
+            // No tiene ese premio, añadir con count = 1
+            $user->prizes()->attach($prize->id, ['count' => 1]);
+        }
+
         return response()->json([
-            'message' => 'Premio aleatorio obtenido',
+            'message' => 'Premio aleatorio obtenido y asignado al usuario',
             'data'    => $prize
+        ], Response::HTTP_OK);
+    }
+
+    public function sell(Prize $prize)
+    {
+        $user = Auth::user();
+        $totalEarned = 0;
+
+        // Obtener la relación en la tabla pivote
+        $pivot = $user->prizes()->where('prize_id', $prize->id)->first();
+
+        // Validar que tenga más de 1 para vender
+        if (!$pivot || $pivot->pivot->count < 2) {
+            return response()->json([
+                'message' => 'No tienes suficientes copias para vender este premio.',
+                'data' => null
+            ]);
+        }
+
+        // Bajar la cantidad en la tabla pivote
+        $user->prizes()->updateExistingPivot($prize->id, [
+            'count' => 1
+        ]);
+
+        // Sumar la recompensa al dinero del usuario
+        $repetidas = $pivot->pivot->count-1;
+        $totalEarned += $prize->reward * $repetidas;
+        $user->money += $totalEarned;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Premio vendido correctamente.'
+        ], Response::HTTP_OK);
+    }
+
+    public function sellAllDuplicates()
+    {
+        $user = Auth::user();
+        $totalEarned = 0;
+
+        // Obtener todos los premios del usuario con su pivote
+        $prizes = $user->prizes()->withPivot('count')->get();
+
+        // Filtrar solo los premios con más de una copia
+        $duplicates = $prizes->filter(function ($prize) {
+            return $prize->pivot->count > 1;
+        });
+
+        // Si no hay ninguno repetido, enviar respuesta
+        if ($duplicates->isEmpty()) {
+            return response()->json([
+                'message' => 'No tienes premios repetidos para vender.',
+                'data' => null
+            ]);
+        }
+
+        // Procesar los premios duplicados
+        foreach ($duplicates as $prize) {
+            $repetidas = $prize->pivot->count - 1;
+
+            // Restar las repetidas
+            $user->prizes()->updateExistingPivot($prize->id, [
+                'count' => 1
+            ]);
+
+            // Sumar el dinero
+            $totalEarned += $prize->reward * $repetidas;
+        }
+
+        // Aumentar el dinero total ganado al usuario
+        $user->money += $totalEarned;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Premios repetidos vendidos correctamente.',
         ], Response::HTTP_OK);
     }
 

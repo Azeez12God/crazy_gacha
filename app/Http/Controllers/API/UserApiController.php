@@ -29,7 +29,6 @@ class UserApiController extends Controller
         $user->email=$request->email;
         $user->password=$request->password;
         $user->money=$request->money;
-        $user->profile_picture=$request->profile_picture;
 
         if($user->save()){
             return response()->json([

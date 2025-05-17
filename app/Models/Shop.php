@@ -23,7 +23,6 @@ class Shop extends Model
       'name',
       'price',
       'type',
-      'quantity',
         'linkImage'
     ];
 
@@ -41,6 +40,6 @@ class Shop extends Model
      * @return BelongsToMany
      */
     public function users(): BelongsToMany{
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withTimestamps(['shop']);
     }
 }

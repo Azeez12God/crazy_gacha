@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->integer('price');
             $table->string('type');
-            $table->integer('quantity');
             $table->string('linkImage');
             $table->timestamps();
         });

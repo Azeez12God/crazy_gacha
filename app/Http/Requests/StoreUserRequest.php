@@ -26,7 +26,6 @@ class StoreUserRequest extends FormRequest
             'email' => 'unique:users|email',
             'password' => 'required|string|min:8',
             'money'=>'integer',
-            'profile_picture'=>'string|nullable',
         ];
     }
 

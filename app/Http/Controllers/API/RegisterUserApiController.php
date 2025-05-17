@@ -16,8 +16,7 @@ class RegisterUserApiController extends Controller
         $user->name=$request->name;
         $user->email=$request->email;
         $user->password= Hash::make($request->password);
-        $user->money=$request->money;
-        $user->profile_picture=$request->profile_picture;
+        $user->money=0;
 
         $user->save();
 

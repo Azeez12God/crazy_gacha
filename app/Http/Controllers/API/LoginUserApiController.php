@@ -38,7 +38,6 @@ class LoginUserApiController extends Controller
         if(Auth::user()->tokens()->delete()){
             return response()->json([
                'message'=>'Sesión cerrada',
-               'data'=>null
             ]);
         }
         else{

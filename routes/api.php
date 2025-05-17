@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserApiController::class);
     Route::apiResource('shop', ShopApiController::class);
+    Route::post('/shop/{shop}/buy', [ShopApiController::class, 'buy']);
     Route::get('/prizes/random', [PrizeApiController::class, 'random']);
+    Route::post('/prizes/{prize}/sell', [PrizeApiController::class, 'sell']);
+    Route::post('/prizes/sellAllDuplicates', [PrizeApiController::class, 'sellAllDuplicates']);
     Route::apiResource('prizes', PrizeApiController::class);
     Route::get('/users/{user}/prizes', [UserApiController::class, 'prizes']);
     Route::get('/users/{user}/products', [UserApiController::class, 'shops']);

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('shop_user', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained();
             $table->foreignId('shop_id')->constrained();
+            $table->integer('count')->default(0);
             $table->primary(['user_id', 'shop_id']);
             $table->timestamps();
         });

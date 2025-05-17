@@ -20,6 +20,40 @@ class ShopApiController extends Controller
         return Shop::all();
     }
 
+    public function buy(Shop $shop)
+    {
+        $user = Auth::user();
+
+        // Verificar si el usuario tiene suficiente dinero
+        if ($user->money < $shop->price) {
+            return response()->json([
+                'message' => 'No tienes suficiente dinero para comprar este producto.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Verificar si el usuario ya tiene ese producto
+        $existing = $user->shops()->where('shop_id', $shop->id)->exists();
+
+        if ($existing) {
+            // Ya tiene ese producto, aumentar el contador
+            $user->shops()->updateExistingPivot($shop->id, [
+                'count' => \DB::raw('count + 1')
+            ]);
+        } else {
+            // No tiene ese producto, añadir con count = 1
+            $user->shops()->attach($shop->id, ['count' => 1]);
+        }
+
+        // Restar el dinero al usuario
+        $user->money -= $shop->price;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Producto comprado correctamente',
+            'data' => $shop
+        ], Response::HTTP_OK);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -29,7 +63,6 @@ class ShopApiController extends Controller
         $shop->name=$request->name;
         $shop->price=$request->price;
         $shop->type=$request->type;
-        $shop->quantity=$request->quantity;
         $shop->linkImage=$request->linkImage;
 
         if($shop->save()){

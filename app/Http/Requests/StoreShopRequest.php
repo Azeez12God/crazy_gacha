@@ -37,7 +37,6 @@ class StoreShopRequest extends FormRequest
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'type' => 'required|string|max:255',
-            'quantity' => 'required|numeric',
         ];
     }
 
@@ -46,7 +45,6 @@ class StoreShopRequest extends FormRequest
             'name.required' => 'El nombre de la mejora es obligatorio.',
             'price.required' => 'El precio es obligatorio.',
             'type.required' => 'El tipo de mejora es obligatorio.',
-            'quantity.required' => 'La cantidad es obligatoria.',
         ];
     }
 }
