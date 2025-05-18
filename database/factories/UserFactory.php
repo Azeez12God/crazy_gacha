@@ -28,7 +28,6 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'money' => fake()->numberBetween(0, 1000),
-            'profile_picture' => fake()->imageUrl(),
             'remember_token' => Str::random(10),
         ];
     }

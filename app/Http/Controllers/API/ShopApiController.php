@@ -28,7 +28,7 @@ class ShopApiController extends Controller
         if ($user->money < $shop->price) {
             return response()->json([
                 'message' => 'No tienes suficiente dinero para comprar este producto.'
-            ], Response::HTTP_BAD_REQUEST);
+            ]);
         }
 
         // Verificar si el usuario ya tiene ese producto

@@ -99,10 +99,10 @@ class PrizesSeeder extends Seeder
             ],
             [
                 'id'     => 11,
-                'name'   => 'Culebra de dientes amarillos y Cucaracha del semen negro',
+                'name'   => 'Tralalero tralala',
                 'rarity' => 'Legendaria',
                 'reward' => $rewards['Legendaria'],
-                'image'  => 'https://i.imgur.com/QTbvKEj.jpg',
+                'image'  => 'https://media.printables.com/media/prints/eba1643f-451c-4ef8-bf8f-33fe9ad2c440/images/9434430_38511e63-f09c-4ce6-a9eb-90965e0e4e2d_445f1246-58a9-40d2-95a7-22d91322bf39/thumbs/cover/800x800/png/images-removebg-preview1.png',
             ],
             [
                 'id'     => 12,

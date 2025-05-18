@@ -22,33 +22,53 @@ class PrizeApiController extends Controller
 
     public function random()
     {
-        $user = Auth::user(); // Usuario autenticado
+        $user = Auth::user();
 
-        // 1) Decide rareza
+        // 1. Obtener huevo activo
+        $activeEgg = $user->shops()
+            ->where('type', 'Egg')
+            ->orderBy('pivot_created_at', 'desc')
+            ->first();
+
+        // 2. Determinar probabilidades
+        $probabilities = $activeEgg
+            ? json_decode($activeEgg->rarity_probabilities, true)
+            : [
+                'comun' => 60,
+                'rara' => 25,
+                'especial' => 10,
+                'epica' => 4,
+                'legendaria' => 1
+            ];
+
+        if ($activeEgg) {
+            $user->shops()->detach($activeEgg->id);
+        }
+
+        // 3. Calcular rareza
         $roll = rand(1, 100);
-        if ($roll <= 60) {
-            $rarity = 'comun';
-        } elseif ($roll <= 85) {
-            $rarity = 'rara';
-        } elseif ($roll <= 95) {
-            $rarity = 'especial';
-        } elseif ($roll <= 99) {
-            $rarity = 'epica';
-        } else {
-            $rarity = 'legendaria';
+        $cumulative = 0;
+        $selectedRarity = 'comun';
+
+        foreach ($probabilities as $rarity => $chance) {
+            $cumulative += $chance;
+            if ($roll <= $cumulative) {
+                $selectedRarity = $rarity;
+                break;
+            }
         }
 
-        // 2) Obtener un premio aleatorio de esa rareza
-        $prize = Prize::where('rarity', $rarity)->inRandomOrder()->first();
+        // 4. Obtener premio
+        $prize = Prize::where('rarity', $selectedRarity)->inRandomOrder()->first();
 
-        if (! $prize) {
+        if (!$prize) {
             return response()->json([
-                'message' => "No hay premios de rareza $rarity",
-                'data'    => null
-            ], Response::HTTP_NOT_FOUND);
+                'message' => "No hay premios de rareza $selectedRarity",
+                'data' => null
+            ]);
         }
 
-        // 3) Guardar en la tabla pivote prize_user
+        // 5. Guardar en la tabla pivote prize_user
         $existing = $user->prizes()->where('prize_id', $prize->id)->exists();
 
         if ($existing) {
@@ -62,9 +82,12 @@ class PrizeApiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Premio aleatorio obtenido y asignado al usuario',
-            'data'    => $prize
-        ], Response::HTTP_OK);
+            'message' => 'Premio obtenido',
+            'data' => [
+                "prize" => $prize,
+                "probabilities" => $probabilities,
+            ]
+        ], 200);
     }
 
     public function sell(Prize $prize)

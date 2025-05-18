@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('price');
             $table->string('type');
             $table->string('linkImage');
+            $table->json('rarity_probabilities')->nullable();
             $table->timestamps();
         });
     }
