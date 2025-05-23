@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Pepo',
             'email' => 'alberto@pepo.es',
             'password' => Hash::make('jejejeje'),
-            'money' => 1000,
+            'money' => 10000,
         ]);
     }
 }

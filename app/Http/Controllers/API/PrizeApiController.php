@@ -154,6 +154,12 @@ class PrizeApiController extends Controller
 
             // Sumar el dinero
             $totalEarned += $prize->reward * $repetidas;
+
+            $vendidos[] = [
+                'name' => $prize->name,
+                'cantidadVendida' => $repetidas,
+                'totalGanado' => $prize->reward * $repetidas,
+            ];
         }
 
         // Aumentar el dinero total ganado al usuario
@@ -162,6 +168,7 @@ class PrizeApiController extends Controller
 
         return response()->json([
             'message' => 'Premios repetidos vendidos correctamente.',
+            'vendidos' => $vendidos
         ], Response::HTTP_OK);
     }
 

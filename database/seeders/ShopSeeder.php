@@ -52,8 +52,46 @@ class ShopSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'name' => 'Huevo épico',
+                'name' => 'Huevo especial',
                 'price' => 250,
+                'type' => 'Egg',
+                'linkImage' => 'https://i.imgur.com/s5STwkW.png',
+                'rarity_probabilities' => json_encode([
+                    'comun' => 10,
+                    'rara' => 25,
+                    'especial' => 50,
+                    'epica' => 30,
+                    'legendaria' => 5
+                ])
+            ],
+            [
+                'id'        => 5,
+                'name'      => '+10% golpe crítico (+5 clics)',
+                'price'     => 100,
+                'type'      => 'Clicks',
+                'linkImage' => 'https://i.imgur.com/dgynw0D.png',
+                'rarity_probabilities' => null
+            ],
+            [
+                'id'        => 6,
+                'name'      => 'Granja de huevos (+5 clics/s)',
+                'price'     => 500,
+                'type'      => 'Clicks',
+                'linkImage' => 'https://i.imgur.com/dMo0L0g.png',
+                'rarity_probabilities' => null
+            ],
+            [
+                'id'        => 7,
+                'name'      => 'Fábrica de huevos (+10 clics/s)',
+                'price'     => 1000,
+                'type'      => 'Clicks',
+                'linkImage' => 'https://i.imgur.com/UauNA42.png',
+                'rarity_probabilities' => null
+            ],
+            [
+                'id' => 8,
+                'name' => 'Huevo épico',
+                'price' => 500,
                 'type' => 'Egg',
                 'linkImage' => 'https://i.imgur.com/b9p4oiH.png',
                 'rarity_probabilities' => json_encode([
@@ -63,7 +101,29 @@ class ShopSeeder extends Seeder
                     'epica' => 50,
                     'legendaria' => 5
                 ])
-            ]
+            ],
+            [
+                'id' => 9,
+                'name' => 'Huevo legendario',
+                'price' => 1000,
+                'type' => 'Egg',
+                'linkImage' => 'https://i.imgur.com/oxlBdOu.png',
+                'rarity_probabilities' => json_encode([
+                    'comun' => 1,
+                    'rara' => 9,
+                    'especial' => 10,
+                    'epica' => 30,
+                    'legendaria' => 50
+                ])
+            ],
+            [
+                'id' => 10,
+                'name' => 'Planeta (+50 clics/s)',
+                'price' => 5000,
+                'type' => 'Clicks',
+                'linkImage' => 'https://i.imgur.com/SyETBoA.png',
+                'rarity_probabilities' => null
+            ],
         ];
 
         Shop::insert($datos);

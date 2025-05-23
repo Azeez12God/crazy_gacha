@@ -29,7 +29,7 @@ class PrizesSeeder extends Seeder
         $datos = [
             [
                 'id'     => 1,
-                'name'   => 'Шайлушай',
+                'name'   => 'Smurf cat',
                 'rarity' => 'Legendaria',
                 'reward' => $rewards['Legendaria'],
                 'image'  => 'https://i.imgur.com/ActZHMg.jpg',
@@ -50,7 +50,7 @@ class PrizesSeeder extends Seeder
             ],
             [
                 'id'     => 4,
-                'name'   => 'Caracol de Van Gogh bien fresco',
+                'name'   => 'Caracol de Van Gogh',
                 'rarity' => 'Rara',
                 'reward' => $rewards['Rara'],
                 'image'  => 'https://i.imgur.com/G4p08cv.jpg',
@@ -92,7 +92,7 @@ class PrizesSeeder extends Seeder
             ],
             [
                 'id'     => 10,
-                'name'   => 'Tafalera',
+                'name'   => 'Terreno desamparado',
                 'rarity' => 'Común',
                 'reward' => $rewards['Común'],
                 'image'  => 'https://i.imgur.com/4IEB9AC.jpg',
