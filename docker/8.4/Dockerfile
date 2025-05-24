@@ -64,6 +64,9 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 
 COPY . /var/www/html
 
+# Instala dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader
+
 RUN chown -R sail:sail /var/www/html
 
 COPY docker/8.4/start-container /usr/local/bin/start-container
