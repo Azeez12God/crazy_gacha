@@ -12,7 +12,7 @@ WORKDIR /var/www/html
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
-ENV SUPERVISOR_PHP_USER="root"
+ENV SUPERVISOR_PHP_USER="sail"
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -61,6 +61,10 @@ RUN chmod +x /usr/bin/php8.4
 RUN userdel -r ubuntu
 RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+
+COPY . /var/www/html
+
+RUN chown -R sail:sail /var/www/html
 
 COPY docker/8.4/start-container /usr/local/bin/start-container
 COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
