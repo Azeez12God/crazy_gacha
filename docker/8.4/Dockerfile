@@ -81,6 +81,7 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
         php8.4-xdebug \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
+RUN chmod 755 /usr/bin/php8.4  # Asegura permisos de ejecución para todos
 # --------------------------------------------------
 # 4. Instalación de Node.js y herramientas
 # --------------------------------------------------
@@ -109,7 +110,6 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc
 RUN userdel -r ubuntu || true \
     && groupadd --force -g $WWWGROUP sail \
     && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail \
-    && chown -R sail:sail /usr/bin/php8.4 \
     && chmod 755 /usr/bin/php8.4
 
 # --------------------------------------------------
