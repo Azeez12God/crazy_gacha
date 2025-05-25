@@ -41,10 +41,6 @@ if [ ! -d /.composer ]; then
 fi
 chmod -R ugo+rw /.composer
 
-# 6) Prepara directorios de Supervisor para logs y pid
-mkdir -p /var/log/supervisor /var/run
-chown -R sail:sail /var/log/supervisor /var/run
-
 # 7) Arranca supervisord o cualquier comando pasado
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then

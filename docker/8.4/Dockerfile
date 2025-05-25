@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php8.4 -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
 ENV SUPERVISOR_PHP_USER="sail"
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -78,7 +78,7 @@ COPY docker/8.4/start-container /usr/local/bin/start-container
 COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/8.4/php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+RUN chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775              /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80/tcp
