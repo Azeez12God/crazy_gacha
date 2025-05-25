@@ -40,11 +40,6 @@ if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ];
     exit 1
 fi
 
-# 4) Ajusta UID de sail si lo indicas con WWWUSER
-if [ -n "$WWWUSER" ]; then
-    usermod -u "$WWWUSER" sail
-fi
-
 # 5) Prepara cache de composer
 if [ ! -d /.composer ]; then
     mkdir /.composer

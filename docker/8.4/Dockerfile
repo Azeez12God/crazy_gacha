@@ -110,7 +110,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc
 # --------------------------------------------------
 RUN userdel -r ubuntu || true \
     && groupadd --force -g $WWWGROUP sail \
-    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail \
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1000 sail \
     && chmod 755 /usr/bin/php8.4
 
 # --------------------------------------------------
