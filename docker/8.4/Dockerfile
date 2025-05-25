@@ -67,10 +67,11 @@ COPY . /var/www/html
 # Instala dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chown -R sail:sail /var/www/html
-
-# Añade permisos explícitos para storage y bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage \
+# Asegura permisos para el usuario sail
+RUN mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/bootstrap/cache \
+    && chown -R sail:sail /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
 COPY docker/8.4/start-container /usr/local/bin/start-container
