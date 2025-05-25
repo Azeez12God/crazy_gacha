@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
 ENV SUPERVISOR_PHP_USER="root"
 
 # --------------------------------------------------
@@ -124,14 +124,17 @@ RUN mkdir -p \
     /var/www/html/storage/logs \
     /var/www/html/bootstrap/cache \
     /var/log/supervisor \
+    /var/run/supervisor \
     && chown -R sail:sail \
         /var/www/html/storage \
         /var/www/html/bootstrap/cache \
         /var/log/supervisor \
+        /var/run/supervisor \
     && chmod -R 775 \
         /var/www/html/storage \
         /var/www/html/bootstrap/cache \
-        /var/log/supervisor
+        /var/log/supervisor \
+        /var/run/supervisor \
 
 RUN mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
     && chown -R sail:sail /var/www/html \
@@ -161,5 +164,5 @@ RUN chmod 755 /usr/local/bin/start-container
 # --------------------------------------------------
 # 11. Exposición y entrypoint
 # --------------------------------------------------
-EXPOSE 80
+EXPOSE 8087
 ENTRYPOINT ["start-container"]

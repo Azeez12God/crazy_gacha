@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+mkdir -p /var/run/supervisor \
+    && chown -R sail:sail /var/run/supervisor \
+    && chmod -R 775 /var/run/supervisor
+
 # Permisos para directorios críticos
 mkdir -p /var/www/html/storage/logs \
     && chown -R sail:sail /var/www/html/storage \
