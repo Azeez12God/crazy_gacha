@@ -1,26 +1,34 @@
 #!/usr/bin/env bash
 
+# Asegura permisos en storage y cache
 chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Ejecuta migraciones y seeders
 php /var/www/html/artisan migrate --seed --force
 
+# Comprueba variable SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
     echo "You should set SUPERVISOR_PHP_USER to either 'sail' or 'root'."
     exit 1
 fi
 
+# Ajusta UID de sail si lo pides
 if [ ! -z "$WWWUSER" ]; then
     usermod -u $WWWUSER sail
 fi
 
+# Composer cache
 if [ ! -d /.composer ]; then
     mkdir /.composer
 fi
-
 chmod -R ugo+rw /.composer
 
+# Prepara logs de Supervisor para que sail pueda escribir
+mkdir -p /var/log/supervisor
+chown -R sail:sail /var/log/supervisor
+
+# Arranca el comando que toque (o supervisord por defecto)
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
         exec "$@"
