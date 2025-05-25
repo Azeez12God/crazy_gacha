@@ -34,3 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/register',[\App\Http\Controllers\API\RegisterUserApiController::class,'register']);
 Route::post('/login',[LoginUserApiController::class,'login']);
 Route::post('/logout',[LoginUserApiController::class,'logout'])->middleware('auth:sanctum');
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
