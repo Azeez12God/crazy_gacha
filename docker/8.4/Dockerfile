@@ -11,64 +11,151 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php8.4 -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
 ENV SUPERVISOR_PHP_USER="sail"
 
+# --------------------------------------------------
+# 1. Configuración básica del sistema
+# --------------------------------------------------
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# dependencias del sistema
+# --------------------------------------------------
+# 2. Instalación de dependencias del sistema
+# --------------------------------------------------
 RUN echo "Acquire::http::Pipeline-Depth 0;" > /etc/apt/apt.conf.d/99custom \
     && echo "Acquire::http::No-Cache true;" >> /etc/apt/apt.conf.d/99custom \
-    && echo "Acquire::BrokenProxy true;" >> /etc/apt/apt.conf.d/99custom \
-    && apt-get update && apt-get upgrade -y \
-    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python3 dnsutils librsvg2-bin fswatch ffmpeg nano
+    && echo "Acquire::BrokenProxy true;" >> /etc/apt/apt.conf.d/99custom
 
-# PHP + Composer
+RUN apt-get update && apt-get upgrade -y \
+    && mkdir -p /etc/apt/keyrings \
+    && apt-get install -y \
+        gnupg \
+        gosu \
+        curl \
+        ca-certificates \
+        zip \
+        unzip \
+        git \
+        supervisor \
+        sqlite3 \
+        libcap2-bin \
+        libpng-dev \
+        python3 \
+        dnsutils \
+        librsvg2-bin \
+        fswatch \
+        ffmpeg \
+        nano
+
+# --------------------------------------------------
+# 3. Instalación de PHP y Composer
+# --------------------------------------------------
 RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e53946656efbce4c1dd71daeaab4ad4cab6' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" \
-       > /etc/apt/sources.list.d/ppa_ondrej_php.list \
+    && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
-    && apt-get install -y php8.4-cli php8.4-dev php8.4-pgsql php8.4-sqlite3 php8.4-gd php8.4-curl php8.4-mongodb php8.4-imap php8.4-mysql php8.4-mbstring php8.4-xml php8.4-zip php8.4-bcmath php8.4-soap php8.4-intl php8.4-readline php8.4-ldap php8.4-msgpack php8.4-igbinary php8.4-redis php8.4-swoole php8.4-memcached php8.4-pcov php8.4-imagick php8.4-xdebug \
+    && apt-get install -y \
+        php8.4-cli \
+        php8.4-dev \
+        php8.4-pgsql \
+        php8.4-sqlite3 \
+        php8.4-gd \
+        php8.4-curl \
+        php8.4-mongodb \
+        php8.4-imap \
+        php8.4-mysql \
+        php8.4-mbstring \
+        php8.4-xml \
+        php8.4-zip \
+        php8.4-bcmath \
+        php8.4-soap \
+        php8.4-intl \
+        php8.4-readline \
+        php8.4-ldap \
+        php8.4-msgpack \
+        php8.4-igbinary \
+        php8.4-redis \
+        php8.4-swoole \
+        php8.4-memcached \
+        php8.4-pcov \
+        php8.4-imagick \
+        php8.4-xdebug \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# node + yarn + clientes DB
+# Crear o actualizar el symlink /usr/bin/php
+RUN ln -sf /usr/bin/php8.4 /usr/bin/php \
+    && chown sail:sail  /usr/bin/php \
+    && chmod 755        /usr/bin/php
+
+# --------------------------------------------------
+# 4. Instalación de Node.js y herramientas
+# --------------------------------------------------
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" \
-       > /etc/apt/sources.list.d/nodesource.list \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
-    && apt-get install -y nodejs yarn $MYSQL_CLIENT postgresql-client-$POSTGRES_VERSION \
-    && npm install -g npm pnpm bun \
+    && apt-get install -y nodejs \
+    && npm install -g npm pnpm bun
+
+# --------------------------------------------------
+# 5. Instalación de Yarn y clientes de base de datos
+# --------------------------------------------------
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc/apt/keyrings/yarn.gpg >/dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
+    && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y yarn $MYSQL_CLIENT postgresql-client-$POSTGRES_VERSION \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# usuario sail
-RUN groupadd --force -g $WWWGROUP sail \
-    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+# --------------------------------------------------
+# 6. Configuración de usuarios y permisos
+# --------------------------------------------------
+RUN userdel -r ubuntu || true \
+    && groupadd --force -g $WWWGROUP sail \
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail \
+    && chown -R sail:sail /usr/bin/php8.4 \
+    && chmod 755 /usr/bin/php8.4
 
-# permisos iniciales en directorios críticos
-RUN mkdir -p /var/www/html/storage/logs /var/www/html/bootstrap/cache /var/log/supervisor \
-    && chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache /var/log/supervisor \
-    && chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache /var/log/supervisor
+# --------------------------------------------------
+# 7. Configuración de directorios críticos
+# --------------------------------------------------
+RUN mkdir -p \
+    /var/www/html/storage/logs \
+    /var/www/html/bootstrap/cache \
+    /var/log/supervisor \
+    && chown -R sail:sail \
+        /var/www/html/storage \
+        /var/www/html/bootstrap/cache \
+        /var/log/supervisor \
+    && chmod -R 775 \
+        /var/www/html/storage \
+        /var/www/html/bootstrap/cache \
+        /var/log/supervisor
 
-# copia código e instala dependencias PHP
+# --------------------------------------------------
+# 8. Copia del código y dependencias
+# --------------------------------------------------
 COPY --chown=sail:sail . /var/www/html
 RUN composer install --no-dev --optimize-autoloader
 
-# symlink php8.4 a php y permisos
-RUN ln -sf /usr/bin/php8.4 /usr/bin/php \
-    && chown sail:sail /usr/bin/php \
-    && chmod 755     /usr/bin/php
+# --------------------------------------------------
+# 9. Configuración final de permisos
+# --------------------------------------------------
+RUN chown -R sail:sail /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
-# permisos finales (refresca antes de arrancar)
-RUN chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
-
-# supervisor config + entrypoint
-COPY docker/8.4/start-container /usr/local/bin/start-container
-COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# --------------------------------------------------
+# 10. Configuración de Supervisor
+# --------------------------------------------------
+COPY docker/8.4/start-container /usr/local/bin/
+COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/
 COPY docker/8.4/php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod 755 /usr/local/bin/start-container
 
+# --------------------------------------------------
+# 11. Exposición y entrypoint
+# --------------------------------------------------
 EXPOSE 80
 ENTRYPOINT ["start-container"]
