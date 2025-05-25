@@ -46,7 +46,9 @@ RUN apt-get update && apt-get upgrade -y \
         ffmpeg \
         nano
 
-# Instalación de PHP y extensiones
+# --------------------------------------------------
+# 3. Instalación de PHP y Composer
+# --------------------------------------------------
 RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e53946656efbce4c1dd71daeaab4ad4cab6' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
@@ -75,16 +77,21 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
         php8.4-memcached \
         php8.4-pcov \
         php8.4-imagick \
-        php8.4-xdebug
+        php8.4-xdebug \
+    && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# Instalación de Node.js y herramientas
+# --------------------------------------------------
+# 4. Instalación de Node.js y herramientas
+# --------------------------------------------------
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get install -y nodejs \
     && npm install -g npm pnpm bun
 
-# Instalación de Yarn y clientes de base de datos
+# --------------------------------------------------
+# 5. Instalación de Yarn y clientes de base de datos
+# --------------------------------------------------
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc/apt/keyrings/yarn.gpg >/dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
@@ -96,7 +103,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # --------------------------------------------------
-# 3. Configuración de usuarios y permisos
+# 6. Configuración de usuarios y permisos
 # --------------------------------------------------
 RUN userdel -r ubuntu || true \
     && groupadd --force -g $WWWGROUP sail \
@@ -105,7 +112,7 @@ RUN userdel -r ubuntu || true \
     && chmod 755 /usr/bin/php8.4
 
 # --------------------------------------------------
-# 4. Configuración de directorios críticos
+# 7. Configuración de directorios críticos
 # --------------------------------------------------
 RUN mkdir -p \
     /var/www/html/storage/logs \
@@ -121,20 +128,20 @@ RUN mkdir -p \
         /var/log/supervisor
 
 # --------------------------------------------------
-# 5. Copia del código y dependencias
+# 8. Copia del código y dependencias
 # --------------------------------------------------
 COPY --chown=sail:sail . /var/www/html
 RUN composer install --no-dev --optimize-autoloader
 
 # --------------------------------------------------
-# 6. Configuración final de permisos
+# 9. Configuración final de permisos
 # --------------------------------------------------
 RUN chown -R sail:sail /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
 # --------------------------------------------------
-# 7. Configuración de Supervisor
+# 10. Configuración de Supervisor
 # --------------------------------------------------
 COPY docker/8.4/start-container /usr/local/bin/
 COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/
@@ -142,7 +149,7 @@ COPY docker/8.4/php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod 755 /usr/local/bin/start-container
 
 # --------------------------------------------------
-# 8. Exposición y entrypoint
+# 11. Exposición y entrypoint
 # --------------------------------------------------
 EXPOSE 80
 USER sail
