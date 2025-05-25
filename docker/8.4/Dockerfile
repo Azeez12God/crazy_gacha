@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php8.4 -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php8.4 -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
 ENV SUPERVISOR_PHP_USER="sail"
 
 # --------------------------------------------------
@@ -80,11 +80,6 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
         php8.4-imagick \
         php8.4-xdebug \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-
-# Crear o actualizar el symlink /usr/bin/php
-RUN ln -sf /usr/bin/php8.4 /usr/bin/php \
-    && chown sail:sail  /usr/bin/php \
-    && chmod 755        /usr/bin/php
 
 # --------------------------------------------------
 # 4. Instalación de Node.js y herramientas
@@ -157,5 +152,5 @@ RUN chmod 755 /usr/local/bin/start-container
 # --------------------------------------------------
 # 11. Exposición y entrypoint
 # --------------------------------------------------
-EXPOSE 80
+EXPOSE 8087
 ENTRYPOINT ["start-container"]
