@@ -36,7 +36,7 @@ chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 2) Ejecuta migraciones y seeders
-sudo -u sail php /var/www/html/artisan migrate:fresh --seed --force
+gosu sail php /var/www/html/artisan migrate:fresh --seed --force
 
 # 3) Comprueba variable SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
@@ -58,9 +58,9 @@ chmod -R ugo+rw /.composer
 # 7) Arranca supervisord o cualquier comando pasado
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
-        exec sudo -u sail "$@"
+        exec gosu sail "$@"
     else
-        exec sudo -u sail /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+        exec gosu sail /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     fi
 else
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
