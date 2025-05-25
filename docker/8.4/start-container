@@ -1,39 +1,56 @@
 #!/usr/bin/env bash
 
-# Asegura permisos en storage y cache
+set -e
+
+# 0) Opcional: si usas DATABASE_URL, extrae el host/puerot/db
+if [ -n "$DATABASE_URL" ]; then
+  # Ejemplo: postgres://user:pass@host:port/db
+  EXPORT_DB_HOST=$(echo "$DATABASE_URL" | sed -E 's#.*@([^:/]+):([0-9]+)/(.+)#\1#')
+  EXPORT_DB_PORT=$(echo "$DATABASE_URL" | sed -E 's#.*@[^:/]+:([0-9]+)/.*#\1#')
+  EXPORT_DB_DATABASE=$(echo "$DATABASE_URL" | sed -E 's#.*/([^/]+)$#\1#')
+  EXPORT_DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://([^:]+):.*@.*#\1#')
+  EXPORT_DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://[^:]+:([^@]+)@.*#\1#')
+  export DB_HOST="$EXPORT_DB_HOST"
+  export DB_PORT="$EXPORT_DB_PORT"
+  export DB_DATABASE="$EXPORT_DB_DATABASE"
+  export DB_USERNAME="$EXPORT_DB_USERNAME"
+  export DB_PASSWORD="$EXPORT_DB_PASSWORD"
+fi
+
+# 1) Permisos en storage y cache de Laravel
 chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Ejecuta migraciones y seeders
+# 2) Ejecuta migraciones y seeders
 php /var/www/html/artisan migrate --seed --force
 
-# Comprueba variable SUPERVISOR_PHP_USER
+# 3) Comprueba variable SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
     echo "You should set SUPERVISOR_PHP_USER to either 'sail' or 'root'."
     exit 1
 fi
 
-# Ajusta UID de sail si lo pides
-if [ ! -z "$WWWUSER" ]; then
-    usermod -u $WWWUSER sail
+# 4) Ajusta UID de sail si lo indicas con WWWUSER
+if [ -n "$WWWUSER" ]; then
+    usermod -u "$WWWUSER" sail
 fi
 
-# Composer cache
+# 5) Prepara cache de composer
 if [ ! -d /.composer ]; then
     mkdir /.composer
 fi
 chmod -R ugo+rw /.composer
 
-# Prepara logs de Supervisor para que sail pueda escribir
-mkdir -p /var/log/supervisor
-chown -R sail:sail /var/log/supervisor
+# 6) Prepara directorios de Supervisor para logs y pid
+mkdir -p /var/log/supervisor /var/run
+chown -R sail:sail /var/log/supervisor /var/run
 
-# Arranca el comando que toque (o supervisord por defecto)
+# 7) Arranca supervisord o cualquier comando pasado
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
         exec "$@"
     else
-        exec gosu $WWWUSER "$@"
+        exec gosu sail "$@"
     fi
 else
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
