@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php8.4 -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
 ENV SUPERVISOR_PHP_USER="sail"
 
 # --------------------------------------------------
@@ -110,8 +110,10 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc
 # --------------------------------------------------
 RUN userdel -r ubuntu || true \
     && groupadd --force -g $WWWGROUP sail \
-    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1000 sail \
-    && chmod 755 /usr/bin/php8.4
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail \
+    && chmod 755 /usr/bin/php8.4 \
+    && ln -sf /usr/bin/php8.4 /usr/bin/php \
+    && chmod 755 /usr/bin/php
 
 # --------------------------------------------------
 # 7. Configuración de directorios críticos
