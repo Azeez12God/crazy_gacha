@@ -153,5 +153,4 @@ RUN chmod 755 /usr/local/bin/start-container
 # 11. Exposición y entrypoint
 # --------------------------------------------------
 EXPOSE 80
-USER sail
 ENTRYPOINT ["start-container"]
