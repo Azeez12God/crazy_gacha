@@ -1,53 +1,45 @@
 #!/usr/bin/env bash
-
 set -e
 
-# 0) Opcional: si usas DATABASE_URL, extrae el host/puerot/db
+# 1) Extrae DB_* si viene DATABASE_URL
 if [ -n "$DATABASE_URL" ]; then
-  # Ejemplo: postgres://user:pass@host:port/db
-  EXPORT_DB_HOST=$(echo "$DATABASE_URL" | sed -E 's#.*@([^:/]+):([0-9]+)/(.+)#\1#')
-  EXPORT_DB_PORT=$(echo "$DATABASE_URL" | sed -E 's#.*@[^:/]+:([0-9]+)/.*#\1#')
-  EXPORT_DB_DATABASE=$(echo "$DATABASE_URL" | sed -E 's#.*/([^/]+)$#\1#')
-  EXPORT_DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://([^:]+):.*@.*#\1#')
-  EXPORT_DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://[^:]+:([^@]+)@.*#\1#')
-  export DB_HOST="$EXPORT_DB_HOST"
-  export DB_PORT="$EXPORT_DB_PORT"
-  export DB_DATABASE="$EXPORT_DB_DATABASE"
-  export DB_USERNAME="$EXPORT_DB_USERNAME"
-  export DB_PASSWORD="$EXPORT_DB_PASSWORD"
+  export DB_HOST=$(echo "$DATABASE_URL" | sed -E 's#.*@([^:/]+):[0-9]+/.*#\1#')
+  export DB_PORT=$(echo "$DATABASE_URL" | sed -E 's#.*@[^:/]+:([0-9]+)/.*#\1#')
+  export DB_DATABASE=$(echo "$DATABASE_URL" | sed -E 's#.*/([^/]+)$#\1#')
+  export DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://([^:]+):.*@.*#\1#')
+  export DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's#postgresql?://[^:]+:([^@]+)@.*#\1#')
 fi
 
-# 1) Permisos en storage y cache de Laravel
+# 2) Permisos storage & cache
 chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 2) Ejecuta migraciones y seeders
+# 3) BD limpia + seed
 php /var/www/html/artisan migrate:fresh --seed --force
 
-# 3) Comprueba variable SUPERVISOR_PHP_USER
+# 4) Validación SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
-    echo "You should set SUPERVISOR_PHP_USER to either 'sail' or 'root'."
-    exit 1
+  echo "Set SUPERVISOR_PHP_USER to 'sail' or 'root'."; exit 1
 fi
 
-# 4) Ajusta UID de sail si lo indicas con WWWUSER
-if [ -n "$WWWUSER" ]; then
-    usermod -u "$WWWUSER" sail
-fi
+# 5) Ajuste UID sail (opcional)
+if [ -n "$WWWUSER" ]; then usermod -u "$WWWUSER" sail; fi
 
-# 5) Prepara cache de composer
-if [ ! -d /.composer ]; then
-    mkdir /.composer
-fi
-chmod -R ugo+rw /.composer
+# 6) Composer cache
+mkdir -p /.composer && chmod -R ugo+rw /.composer
 
-# 7) Arranca supervisord o cualquier comando pasado
+# 7) Prepara logs y pid de Supervisor
+mkdir -p /var/log/supervisor /tmp
+touch /var/log/supervisor/supervisord.log
+chown -R sail:sail /var/log/supervisor /tmp
+
+# 8) Ejecuta comando o supervisord
 if [ $# -gt 0 ]; then
-    if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
-        exec "$@"
-    else
-        exec gosu sail "$@"
-    fi
+  if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
+    exec "$@"
+  else
+    exec gosu sail "$@"
+  fi
 else
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+  exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 fi
