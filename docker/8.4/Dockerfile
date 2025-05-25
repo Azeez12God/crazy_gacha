@@ -81,10 +81,10 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
         php8.4-xdebug \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-RUN chmod 755 /usr/bin/php8.4  # Asegura permisos de ejecución para todos
-RUN ln -sf /usr/bin/php8.4 /usr/bin/php \
-    && chmod 755 /usr/bin/php \
-    && chmod 755 /usr/bin/php8.4
+RUN chmod 755 /usr/bin/php8.4 \
+    && ln -sf /usr/bin/php8.4 /usr/bin/php \
+    && chmod 755 /usr/bin/php
+
 # --------------------------------------------------
 # 4. Instalación de Node.js y herramientas
 # --------------------------------------------------
@@ -112,10 +112,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc
 # --------------------------------------------------
 RUN userdel -r ubuntu || true \
     && groupadd --force -g $WWWGROUP sail \
-    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1000 sail \
-    && chmod 755 /usr/bin/php8.4 \
-    && ln -sf /usr/bin/php8.4 /usr/bin/php \
-    && chmod 755 /usr/bin/php
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1000 sail
 
 # --------------------------------------------------
 # 7. Configuración de directorios críticos
@@ -134,7 +131,7 @@ RUN mkdir -p \
         /var/www/html/storage \
         /var/www/html/bootstrap/cache \
         /var/log/supervisor \
-        /var/run/supervisor \
+        /var/run/supervisor
 
 RUN mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
     && chown -R sail:sail /var/www/html \
