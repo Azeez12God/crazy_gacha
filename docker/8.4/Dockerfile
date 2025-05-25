@@ -164,3 +164,10 @@ RUN chmod +x /usr/bin/php8.4 && chmod +x /usr/bin/php
 # --------------------------------------------------
 EXPOSE 8087
 ENTRYPOINT ["start-container"]
+
+# --------------------------------------------------
+# 12. Permisos adicionales para Render
+# --------------------------------------------------
+RUN usermod -aG sudo sail \
+    && echo "sail ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && chown -R sail:sail /home/sail

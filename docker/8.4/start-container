@@ -58,9 +58,9 @@ chmod -R ugo+rw /.composer
 # 7) Arranca supervisord o cualquier comando pasado
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
-        exec "$@"
+        exec sudo -u sail "$@"
     else
-        exec gosu sail "$@"
+        exec sudo -u sail /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     fi
 else
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
