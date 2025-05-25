@@ -22,7 +22,7 @@ chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 2) Ejecuta migraciones y seeders
-php /var/www/html/artisan migrate --seed --force
+php /var/www/html/artisan migrate:fresh --seed --force
 
 # 3) Comprueba variable SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
