@@ -12,7 +12,7 @@ WORKDIR /var/www/html
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
-ENV SUPERVISOR_PHP_USER="sail"
+ENV SUPERVISOR_PHP_USER="root"
 
 # --------------------------------------------------
 # 1. Configuración básica del sistema
@@ -157,6 +157,7 @@ COPY docker/8.4/start-container /usr/local/bin/
 COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/
 COPY docker/8.4/php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod 755 /usr/local/bin/start-container
+RUN chmod +x /usr/bin/php8.4 && chmod +x /usr/bin/php
 
 # --------------------------------------------------
 # 11. Exposición y entrypoint
