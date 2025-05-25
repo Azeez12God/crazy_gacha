@@ -82,6 +82,7 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 RUN chmod 755 /usr/bin/php8.4  # Asegura permisos de ejecución para todos
+RUN ln -sf /usr/bin/php8.4 /usr/bin/php && chmod 755 /usr/bin/php
 # --------------------------------------------------
 # 4. Instalación de Node.js y herramientas
 # --------------------------------------------------
