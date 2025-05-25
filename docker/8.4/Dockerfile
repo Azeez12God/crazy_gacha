@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=8087"
+ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
 ENV SUPERVISOR_PHP_USER="root"
 
 # --------------------------------------------------
@@ -161,5 +161,5 @@ RUN chmod 755 /usr/local/bin/start-container
 # --------------------------------------------------
 # 11. Exposición y entrypoint
 # --------------------------------------------------
-EXPOSE 8087
+EXPOSE 80
 ENTRYPOINT ["start-container"]
