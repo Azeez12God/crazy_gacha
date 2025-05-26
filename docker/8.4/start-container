@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-mkdir -p /var/run/supervisor \
-    && chown -R sail:sail /var/run/supervisor \
-    && chmod -R 775 /var/run/supervisor
-
-# Permisos para directorios críticos
-mkdir -p /var/www/html/storage/logs \
-    && chown -R sail:sail /var/www/html/storage \
-    && chmod -R 775 /var/www/html/storage
-
-# Permisos para logs de supervisor
-mkdir -p /var/log/supervisor \
-    && chown -R sail:sail /var/log/supervisor \
-    && chmod -R 775 /var/log/supervisor
-
 set -e
 
 # 0) Opcional: si usas DATABASE_URL, extrae el host/puerot/db
@@ -36,7 +22,7 @@ chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775    /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 2) Ejecuta migraciones y seeders
-gosu sail php /var/www/html/artisan migrate:fresh --seed --force
+php /var/www/html/artisan migrate:fresh --seed --force
 
 # 3) Comprueba variable SUPERVISOR_PHP_USER
 if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
@@ -45,9 +31,9 @@ if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ];
 fi
 
 # 4) Ajusta UID de sail si lo indicas con WWWUSER
-#if [ -n "$WWWUSER" ]; then
-#    usermod -u "$WWWUSER" sail
-#fi
+if [ -n "$WWWUSER" ]; then
+    usermod -u "$WWWUSER" sail
+fi
 
 # 5) Prepara cache de composer
 if [ ! -d /.composer ]; then
@@ -58,9 +44,9 @@ chmod -R ugo+rw /.composer
 # 7) Arranca supervisord o cualquier comando pasado
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
-        exec gosu sail "$@"
+        exec "$@"
     else
-        exec gosu sail /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+        exec gosu sail "$@"
     fi
 else
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
