@@ -135,13 +135,16 @@ RUN mkdir -p \
 
 RUN mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
     && chown -R sail:sail /var/www/html \
-    && chmod -R 775 /var/www/html/storage
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # --------------------------------------------------
 # 8. Copia del código y dependencias
 # --------------------------------------------------
 COPY --chown=sail:sail . /var/www/html
+USER sail
 RUN composer install --no-dev --optimize-autoloader
+USER root
 
 # --------------------------------------------------
 # 9. Configuración final de permisos
@@ -165,5 +168,7 @@ RUN chmod +x /usr/bin/php8.4 && chmod +x /usr/bin/php
 EXPOSE 8087
 RUN chmod 755 /usr/bin/php8.4 && chmod 755 /usr/bin/php
 RUN chown sail:sail /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan \
-    && chmod 755 /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan
+    && chmod 755 /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan \
+RUN chmod -R 777 /var/www/html/storage \
+    && chmod -R 777 /var/www/html/bootstrap/cache
 ENTRYPOINT ["start-container"]
