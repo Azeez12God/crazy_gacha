@@ -163,11 +163,7 @@ RUN chmod +x /usr/bin/php8.4 && chmod +x /usr/bin/php
 # 11. Exposición y entrypoint
 # --------------------------------------------------
 EXPOSE 8087
+RUN chmod 755 /usr/bin/php8.4 && chmod 755 /usr/bin/php
+RUN chown sail:sail /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan \
+    && chmod 755 /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan
 ENTRYPOINT ["start-container"]
-
-# --------------------------------------------------
-# 12. Permisos adicionales para Render
-# --------------------------------------------------
-RUN usermod -aG sudo sail \
-    && echo "sail ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && chown -R sail:sail /home/sail
