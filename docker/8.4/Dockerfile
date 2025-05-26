@@ -55,35 +55,34 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Ajustes de PHP
+RUN chmod +x /usr/bin/php8.4
+
+# Elimina usuario ubuntu, crea grupo y usuario sail
+RUN userdel -r ubuntu \
+    && groupadd --force -g $WWWGROUP sail \
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+
+# Crea directorio de supervisor y asigna permisos
 RUN mkdir -p /var/run/supervisor \
     && chown -R sail:sail /var/run/supervisor
 
-# RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
-RUN chmod +x /usr/bin/php8.4
-
-RUN userdel -r ubuntu
-RUN groupadd --force -g $WWWGROUP sail
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
-
+# Copia el código y dependencias
 COPY . /var/www/html
-
-# Instala dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Asegura permisos para el usuario sail
+# Ajusta permisos en storage y cache
 RUN mkdir -p /var/www/html/storage/logs \
     && mkdir -p /var/www/html/bootstrap/cache \
     && chown -R sail:sail /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
+# Copia scripts y configuración de supervisord
 COPY docker/8.4/start-container /usr/local/bin/start-container
 COPY docker/8.4/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/8.4/php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
-RUN chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775              /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80/tcp
-
 ENTRYPOINT ["start-container"]
