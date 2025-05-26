@@ -34,11 +34,11 @@ class PrizeApiController extends Controller
         $probabilities = $activeEgg
             ? json_decode($activeEgg->rarity_probabilities, true)
             : [
-                'comun' => 60,
-                'rara' => 25,
-                'especial' => 10,
-                'epica' => 4,
-                'legendaria' => 1
+                'Común' => 60,
+                'Rara' => 25,
+                'Especial' => 10,
+                'Épica' => 4,
+                'Legendaria' => 1
             ];
 
         if ($activeEgg) {
@@ -48,7 +48,7 @@ class PrizeApiController extends Controller
         // 3. Calcular rareza
         $roll = rand(1, 100);
         $cumulative = 0;
-        $selectedRarity = 'comun';
+        $selectedRarity = 'Común';
 
         foreach ($probabilities as $rarity => $chance) {
             $cumulative += $chance;
