@@ -64,8 +64,7 @@ RUN userdel -r ubuntu \
     && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 
 # Crea directorio de supervisor y asigna permisos
-RUN mkdir -p /var/run/supervisor \
-    && chown -R sail:sail /var/run/supervisor
+RUN mkdir -p /var/run/supervisor
 
 # Copia el código y dependencias
 COPY . /var/www/html
