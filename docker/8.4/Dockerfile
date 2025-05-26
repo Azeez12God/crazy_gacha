@@ -167,8 +167,11 @@ RUN chmod +x /usr/bin/php8.4 && chmod +x /usr/bin/php
 # --------------------------------------------------
 EXPOSE 8087
 RUN chmod 755 /usr/bin/php8.4 && chmod 755 /usr/bin/php
+# Línea 170 corregida:
 RUN chown sail:sail /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan \
-    && chmod 755 /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan \
+    && chmod 755 /usr/bin/php8.4 /usr/bin/php /var/www/html/artisan
+
+# Permisos temporales (opcional, solo para diagnóstico):
 RUN chmod -R 777 /var/www/html/storage \
     && chmod -R 777 /var/www/html/bootstrap/cache
 ENTRYPOINT ["start-container"]
