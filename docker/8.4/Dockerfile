@@ -55,6 +55,9 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN mkdir -p /var/run/supervisor \
+    && chown -R sail:sail /var/run/supervisor
+
 # RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 RUN chmod +x /usr/bin/php8.4
 
