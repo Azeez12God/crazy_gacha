@@ -43,11 +43,11 @@ class ShopSeeder extends Seeder
                 'type' => 'Egg',
                 'linkImage' => 'https://i.imgur.com/V3D7ZMV.png',
                 'rarity_probabilities' => json_encode([
-                    'comun' => 40,
-                    'rara' => 30,
-                    'especial' => 15,
-                    'epica' => 10,
-                    'legendaria' => 5
+                    'Común' => 40,
+                    'Rara' => 30,
+                    'Especial' => 15,
+                    'Épica' => 10,
+                    'Legendaria' => 5
                 ])
             ],
             [
@@ -57,11 +57,11 @@ class ShopSeeder extends Seeder
                 'type' => 'Egg',
                 'linkImage' => 'https://i.imgur.com/s5STwkW.png',
                 'rarity_probabilities' => json_encode([
-                    'comun' => 10,
-                    'rara' => 25,
-                    'especial' => 50,
-                    'epica' => 30,
-                    'legendaria' => 5
+                    'Común' => 10,
+                    'Rara' => 25,
+                    'Especial' => 50,
+                    'Épica' => 30,
+                    'Legendaria' => 5
                 ])
             ],
             [
@@ -95,11 +95,11 @@ class ShopSeeder extends Seeder
                 'type' => 'Egg',
                 'linkImage' => 'https://i.imgur.com/b9p4oiH.png',
                 'rarity_probabilities' => json_encode([
-                    'comun' => 5,
-                    'rara' => 10,
-                    'especial' => 30,
-                    'epica' => 50,
-                    'legendaria' => 5
+                    'Común' => 5,
+                    'Rara' => 10,
+                    'Especial' => 30,
+                    'Épica' => 50,
+                    'Legendaria' => 5
                 ])
             ],
             [
@@ -109,11 +109,11 @@ class ShopSeeder extends Seeder
                 'type' => 'Egg',
                 'linkImage' => 'https://i.imgur.com/oxlBdOu.png',
                 'rarity_probabilities' => json_encode([
-                    'comun' => 1,
-                    'rara' => 9,
-                    'especial' => 10,
-                    'epica' => 30,
-                    'legendaria' => 50
+                    'Común' => 1,
+                    'Rara' => 9,
+                    'Especial' => 10,
+                    'Épica' => 30,
+                    'Legendaria' => 50
                 ])
             ],
             [
