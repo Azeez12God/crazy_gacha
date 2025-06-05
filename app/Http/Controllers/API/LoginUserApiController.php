@@ -20,7 +20,7 @@ class LoginUserApiController extends Controller
         if(!$logueado){
             return response()->json([
                'message'=>'Usuario o contraseña incorrectos',
-               'data'=>$logueado
+               'data'=>null
             ]);
         }
         else{
